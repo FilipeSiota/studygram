@@ -93,3 +93,52 @@ func GetAll() (users []User, err error) {
 
 	return
 }
+
+func Update(user User) (int64, error) {
+	conn, err := db.OpenConnection()
+	if err != nil {
+		return 0, err
+	}
+	defer conn.Close()
+
+	sql :=
+		`UPDATE user
+		SET
+			name = $1
+			username = $2
+			email = $3
+			biography = $4
+		WHERE
+			id = $5`
+
+	res, err := conn.Exec(sql, user.Name, user.Username, user.Email, user.Biography, user.ID)
+
+	if err != nil {
+		return 0, err
+	}
+
+	return res.RowsAffected()
+}
+
+func Delete(id int64) (int64, error) {
+	conn, err := db.OpenConnection()
+	if err != nil {
+		return 0, err
+	}
+	defer conn.Close()
+
+	sql :=
+		`UPDATE user
+		SET
+			is_active = 0
+		WHERE
+			id = $5`
+
+	res, err := conn.Exec(sql, id)
+
+	if err != nil {
+		return 0, err
+	}
+
+	return res.RowsAffected()
+}
